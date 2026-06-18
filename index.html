@@ -325,6 +325,29 @@ html, body {
   display: inline-block;
 }
 
+/* ===== TOGGLE PANEL BTN (desktop) ===== */
+#btn-toggle-panel {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1100;
+  background: #0b5ed7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, left 0.3s;
+}
+#btn-toggle-panel:hover { background: #0a4fc4; }
+#btn-toggle-panel.panel-open { left: 270px; }
+
 /* ===== RESPONSIVE ===== */
 @media (min-width: 769px) {
   #panel { transform: translateX(0); }
@@ -332,7 +355,15 @@ html, body {
   #map {
     margin-left: 260px;
     width: calc(100% - 260px);
+    transition: margin-left 0.3s, width 0.3s;
   }
+  #map.panel-closed {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+@media (max-width: 768px) {
+  #btn-toggle-panel { display: none; }
 }
 @media (max-width: 480px) {
   #detalle-panel { width: 100%; }
@@ -341,6 +372,9 @@ html, body {
 </head>
 
 <body>
+
+<!-- BOTÓN TOGGLE PANEL (desktop) -->
+<button id="btn-toggle-panel" title="Mostrar/Ocultar recorridos">☰</button>
 
 <!-- PANEL RECORRIDOS -->
 <div id="panel">
@@ -389,15 +423,17 @@ html, body {
 
 <script>
 /* ===== REFERENCIAS DOM ===== */
-const elPanel       = document.getElementById('panel');
-const elBtnRecorr   = document.getElementById('btn-recorridos');
-const elFarePanel   = document.getElementById('fare-panel');
-const elBtnTarifa   = document.getElementById('btn-tarifa');
-const elFareClose   = document.getElementById('fare-close');
-const elLista       = document.getElementById('lista');
-const detallePanel  = document.getElementById('detalle-panel');
-const dpContent     = document.getElementById('dp-content');
-const dpCloseBtn    = document.getElementById('dp-close-btn');
+const elPanel         = document.getElementById('panel');
+const elBtnRecorr     = document.getElementById('btn-recorridos');
+const elBtnToggle     = document.getElementById('btn-toggle-panel');
+const elFarePanel     = document.getElementById('fare-panel');
+const elBtnTarifa     = document.getElementById('btn-tarifa');
+const elFareClose     = document.getElementById('fare-close');
+const elLista         = document.getElementById('lista');
+const detallePanel    = document.getElementById('detalle-panel');
+const dpContent       = document.getElementById('dp-content');
+const dpCloseBtn      = document.getElementById('dp-close-btn');
+const elMap           = document.getElementById('map');
 
 /* ===== MAPA ===== */
 const map = L.map('map', { zoomControl: false }).setView([-39.82, -73.25], 13);
@@ -409,7 +445,31 @@ L.tileLayer(
   { subdomains: 'abcd', maxZoom: 19 }
 ).addTo(map);
 
-/* ===== BOTONES FAB ===== */
+/* ===== TOGGLE PANEL DESKTOP ===== */
+let panelVisible = true;
+
+function togglePanel() {
+  panelVisible = !panelVisible;
+  if (panelVisible) {
+    elPanel.style.transform = 'translateX(0)';
+    elMap.classList.remove('panel-closed');
+    elBtnToggle.classList.add('panel-open');
+    elBtnToggle.textContent = '✕';
+  } else {
+    elPanel.style.transform = 'translateX(-100%)';
+    elMap.classList.add('panel-closed');
+    elBtnToggle.classList.remove('panel-open');
+    elBtnToggle.textContent = '☰';
+  }
+  setTimeout(() => map.invalidateSize(), 310);
+}
+
+elBtnToggle.addEventListener('click', togglePanel);
+// Inicializar estado visible en desktop
+elBtnToggle.classList.add('panel-open');
+elBtnToggle.textContent = '✕';
+
+/* ===== BOTONES FAB (mobile) ===== */
 elBtnRecorr.addEventListener('click', () => elPanel.classList.toggle('open'));
 elBtnTarifa.addEventListener('click', () => elFarePanel.classList.toggle('open'));
 elFareClose.addEventListener('click', () => elFarePanel.classList.remove('open'));
@@ -585,9 +645,13 @@ const iconJardin = L.icon({
   iconAnchor: [15, 28]
 });
 
+let jardinesData = [];
+
 fetch('./data/jardines.json')
   .then(r => r.json())
   .then(jardines => {
+    jardinesData = jardines;
+
     jardines.forEach(j => {
       const m = L.marker([j.lat, j.lng], { icon: iconJardin })
         .bindTooltip(j.nombre, {
@@ -597,14 +661,13 @@ fetch('./data/jardines.json')
           className:  'label-jardin'
         });
 
-      // Popup tarjeta (imagen 1)
       const popupHtml = `
-        <div class="popup-jardin">
+        <div class="popup-jardin" data-jardin-id="${j.id}">
           <div style="font-size:11px;color:#888;margin-bottom:6px;text-align:right">${j.codigo}</div>
           <div class="pj-header">
-            <div class="pj-icon" onclick="window._abrirDetalle(${j.id})">🏠</div>
+            <div class="pj-icon">🏠</div>
             <div class="pj-title">
-              <div class="pj-nombre" onclick="window._abrirDetalle(${j.id})">${j.nombre}</div>
+              <div class="pj-nombre">${j.nombre}</div>
               <div style="margin-top:4px">
                 <span class="pj-badge">${j.modalidad}</span>
               </div>
@@ -614,28 +677,48 @@ fetch('./data/jardines.json')
             <span class="pj-dir-icon">📍</span>
             <span>${j.direccion}</span>
           </div>
-          <button class="pj-btn" onclick="window._abrirDetalle(${j.id})">Ver Ficha &rsaquo;</button>
+          <button class="pj-btn pj-ver-ficha" data-id="${j.id}">Ver Ficha &rsaquo;</button>
         </div>
       `;
 
       m.bindPopup(popupHtml, { maxWidth: 260 });
-
       cluster.addLayer(m);
     });
+  })
+  .catch(() => console.warn('No se pudo cargar jardines.json'));
 
-    // Exponer función global para los botones del popup
-    window._abrirDetalle = (id) => {
-      const j = jardines.find(x => x.id === id);
+// Siempre mostrar jardines
+map.addLayer(cluster);
+
+// Delegación de eventos para "Ver Ficha" dentro de cualquier popup abierto
+map.on('popupopen', (e) => {
+  const popup = e.popup.getElement();
+  if (!popup) return;
+  const btn = popup.querySelector('.pj-ver-ficha');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id);
+      const j = jardinesData.find(x => x.id === id);
       if (j) {
         map.closePopup();
         abrirDetalle(j);
       }
-    };
-  })
-  .catch(() => console.warn('No se pudo cargar jardines.json'));
-
-// Siempre mostrar jardines (sin filtro)
-map.addLayer(cluster);
+    });
+  }
+  // También al pinchar el ícono o el nombre
+  popup.querySelectorAll('.pj-icon, .pj-nombre').forEach(el => {
+    el.addEventListener('click', () => {
+      const wrap = el.closest('[data-jardin-id]');
+      if (!wrap) return;
+      const id = parseInt(wrap.dataset.jardinId);
+      const j = jardinesData.find(x => x.id === id);
+      if (j) {
+        map.closePopup();
+        abrirDetalle(j);
+      }
+    });
+  });
+});
 </script>
 
 </body>
