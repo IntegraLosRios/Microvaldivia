@@ -1,92 +1,355 @@
 [
   {
+    "id": 1,
     "nombre": "El Canelito",
+    "codigo": "14101001",
     "lat": -39.84273497286754,
-    "lng": -73.21693456748824
+    "lng": -73.21693456748824,
+    "direccion": "Av. Los Notros 123, Valdivia, Los Ríos",
+    "entidad": "JUNJI",
+    "telefono": "632223410",
+    "directora": "María González López",
+    "email": "elcanelito@eduvaldivia.gob.cl",
+    "horario": "08:00 A 18:00",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 16, "vacantes": true },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 24, "vacantes": true }
+    ]
   },
   {
+    "id": 2,
     "nombre": "Cuncunita",
+    "codigo": "14101002",
     "lat": -39.80377064546047,
-    "lng": -73.2089080336706
+    "lng": -73.2089080336706,
+    "direccion": "Psj. Las Avellanas 456, Valdivia, Los Ríos",
+    "entidad": "JUNJI",
+    "telefono": "632234521",
+    "directora": "Patricia Soto Vera",
+    "email": "cuncunita@eduvaldivia.gob.cl",
+    "horario": "08:30 A 18:30",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 20, "vacantes": false },
+      { "nombre": "Nivel Medio Mayor", "rango": "36 - 47 Meses", "capacidad": 20, "vacantes": true }
+    ]
   },
   {
+    "id": 3,
     "nombre": "Esperanza",
+    "codigo": "14101003",
     "lat": -39.83495914304212,
-    "lng": -73.25620091489277
+    "lng": -73.25620091489277,
+    "direccion": "Calle Esperanza 789, Valdivia, Los Ríos",
+    "entidad": "Integra",
+    "telefono": "632245632",
+    "directora": "Rosa Muñoz Pérez",
+    "email": "esperanza@integra.cl",
+    "horario": "08:00 A 17:30",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Mayor", "rango": "12 - 23 Meses", "capacidad": 16, "vacantes": true },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 28, "vacantes": true },
+      { "nombre": "Nivel de Transición 1", "rango": "48 - 59 Meses", "capacidad": 32, "vacantes": false }
+    ]
   },
   {
+    "id": 4,
     "nombre": "Papelucho",
+    "codigo": "14101004",
     "lat": -39.81424785013783,
-    "lng": -73.22537407541412
+    "lng": -73.22537407541412,
+    "direccion": "Av. Ramón Picarte 234, Valdivia, Los Ríos",
+    "entidad": "JUNJI",
+    "telefono": "632256743",
+    "directora": "Carmen Flores Silva",
+    "email": "papelucho@eduvaldivia.gob.cl",
+    "horario": "08:30 A 19:00",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 20, "vacantes": true },
+      { "nombre": "Sala Cuna Mayor", "rango": "12 - 23 Meses", "capacidad": 20, "vacantes": true },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 32, "vacantes": true }
+    ]
   },
   {
+    "id": 5,
     "nombre": "Ensueño",
+    "codigo": "14101005",
     "lat": -39.84414187955394,
-    "lng": -73.22834071255748
+    "lng": -73.22834071255748,
+    "direccion": "Calle Los Sauces 567, Valdivia, Los Ríos",
+    "entidad": "Integra",
+    "telefono": "632267854",
+    "directora": "Ana Ramírez Torres",
+    "email": "ensueno@integra.cl",
+    "horario": "09:00 A 18:00",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL",
+    "niveles": [
+      { "nombre": "Nivel Medio Menor", "rango": "24 - 35 Meses", "capacidad": 24, "vacantes": false },
+      { "nombre": "Nivel Medio Mayor", "rango": "36 - 47 Meses", "capacidad": 24, "vacantes": true }
+    ]
   },
   {
+    "id": 6,
     "nombre": "Los Pinguinitos",
+    "codigo": "14101006",
     "lat": -39.80950032451909,
-    "lng": -73.25326488570953
+    "lng": -73.25326488570953,
+    "direccion": "Psj. Los Copihues 890, Valdivia, Los Ríos",
+    "entidad": "JUNJI",
+    "telefono": "632278965",
+    "directora": "Isabel Castro Rojas",
+    "email": "pinguinitos@eduvaldivia.gob.cl",
+    "horario": "08:00 A 18:00",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 16, "vacantes": true },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 28, "vacantes": true },
+      { "nombre": "Nivel de Transición 1", "rango": "48 - 59 Meses", "capacidad": 32, "vacantes": true }
+    ]
   },
   {
+    "id": 7,
     "nombre": "Amanecer del Sol",
+    "codigo": "14101007",
     "lat": -39.85028841951018,
-    "lng": -73.22424813394893
+    "lng": -73.22424813394893,
+    "direccion": "Av. Circunvalación Sur 321, Valdivia, Los Ríos",
+    "entidad": "JUNJI",
+    "telefono": "632289076",
+    "directora": "Luisa Morales Díaz",
+    "email": "amanecer@eduvaldivia.gob.cl",
+    "horario": "08:30 A 18:30",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Mayor", "rango": "12 - 23 Meses", "capacidad": 20, "vacantes": false },
+      { "nombre": "Nivel Medio Menor", "rango": "24 - 35 Meses", "capacidad": 24, "vacantes": true }
+    ]
   },
   {
+    "id": 8,
     "nombre": "Más Amigos",
+    "codigo": "14101008",
     "lat": -39.807632649126056,
-    "lng": -73.22226378605754
+    "lng": -73.22226378605754,
+    "direccion": "Calle Balmaceda 654, Valdivia, Los Ríos",
+    "entidad": "Integra",
+    "telefono": "632290187",
+    "directora": "Sandra Vega Contreras",
+    "email": "masamigos@integra.cl",
+    "horario": "08:00 A 17:30",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 20, "vacantes": true },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 32, "vacantes": true },
+      { "nombre": "Nivel de Transición 2", "rango": "60 - 71 Meses", "capacidad": 32, "vacantes": false }
+    ]
   },
   {
+    "id": 9,
     "nombre": "El Principito",
+    "codigo": "14101009",
     "lat": -39.848771638045235,
-    "lng": -73.2477758706834
+    "lng": -73.2477758706834,
+    "direccion": "Av. Simpson 987, Valdivia, Los Ríos",
+    "entidad": "JUNJI",
+    "telefono": "632201298",
+    "directora": "Verónica Pino Álvarez",
+    "email": "principito@eduvaldivia.gob.cl",
+    "horario": "08:30 A 19:00",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 16, "vacantes": false },
+      { "nombre": "Sala Cuna Mayor", "rango": "12 - 23 Meses", "capacidad": 20, "vacantes": false },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 28, "vacantes": true }
+    ]
   },
   {
+    "id": 10,
     "nombre": "Luz de los Ríos",
+    "codigo": "14101010",
     "lat": -39.806084790523975,
-    "lng": -73.22033077826207
+    "lng": -73.22033077826207,
+    "direccion": "Calle Yerbas Buenas 123, Valdivia, Los Ríos",
+    "entidad": "Integra",
+    "telefono": "632212309",
+    "directora": "Claudia Herrera Sepúlveda",
+    "email": "luzrios@integra.cl",
+    "horario": "08:00 A 18:00",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL",
+    "niveles": [
+      { "nombre": "Nivel Medio Mayor", "rango": "36 - 47 Meses", "capacidad": 24, "vacantes": true },
+      { "nombre": "Nivel de Transición 1", "rango": "48 - 59 Meses", "capacidad": 32, "vacantes": true }
+    ]
   },
   {
+    "id": 11,
     "nombre": "Pequeña Misión de Jesús",
+    "codigo": "14101011",
     "lat": -39.853275602464464,
-    "lng": -73.23143306142862
+    "lng": -73.23143306142862,
+    "direccion": "Av. Francia 456, Valdivia, Los Ríos",
+    "entidad": "Particular Subvencionado",
+    "telefono": "632223410",
+    "directora": "Mónica Sepúlveda Riquelme",
+    "email": "pmision@gmail.com",
+    "horario": "08:00 A 18:30",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 16, "vacantes": true },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 28, "vacantes": false }
+    ]
   },
   {
+    "id": 12,
     "nombre": "Dulce Bebé",
+    "codigo": "14101012",
     "lat": -39.844201811271745,
-    "lng": -73.21486129465939
+    "lng": -73.21486129465939,
+    "direccion": "Psj. Los Pellines 789, Valdivia, Los Ríos",
+    "entidad": "JUNJI",
+    "telefono": "632234521",
+    "directora": "Teresa Navarrete Bravo",
+    "email": "dulcebebe@eduvaldivia.gob.cl",
+    "horario": "08:30 A 18:30",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Mayor", "rango": "12 - 23 Meses", "capacidad": 20, "vacantes": true },
+      { "nombre": "Nivel Medio Menor", "rango": "24 - 35 Meses", "capacidad": 24, "vacantes": true },
+      { "nombre": "Nivel Medio Mayor", "rango": "36 - 47 Meses", "capacidad": 24, "vacantes": false }
+    ]
   },
   {
+    "id": 13,
     "nombre": "Rinconcito Feliz",
+    "codigo": "14101013",
     "lat": -39.8521791164857,
-    "lng": -73.23063825420769
+    "lng": -73.23063825420769,
+    "direccion": "Calle René Schneider 234, Valdivia, Los Ríos",
+    "entidad": "JUNJI",
+    "telefono": "632245632",
+    "directora": "Gloria Jiménez Fuentes",
+    "email": "rinconcito@eduvaldivia.gob.cl",
+    "horario": "08:00 A 18:00",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 20, "vacantes": false },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 32, "vacantes": true },
+      { "nombre": "Nivel de Transición 1", "rango": "48 - 59 Meses", "capacidad": 32, "vacantes": true },
+      { "nombre": "Nivel de Transición 2", "rango": "60 - 71 Meses", "capacidad": 32, "vacantes": true }
+    ]
   },
   {
+    "id": 14,
     "nombre": "Aneley",
+    "codigo": "14101014",
     "lat": -39.84482253485546,
-    "lng": -73.21738114843103
+    "lng": -73.21738114843103,
+    "direccion": "Av. Arturo Prat 567, Valdivia, Los Ríos",
+    "entidad": "Integra",
+    "telefono": "632256743",
+    "directora": "Fabiola Cárdenas Núñez",
+    "email": "aneley@integra.cl",
+    "horario": "08:30 A 19:00",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 16, "vacantes": true },
+      { "nombre": "Sala Cuna Mayor", "rango": "12 - 23 Meses", "capacidad": 20, "vacantes": true }
+    ]
   },
   {
+    "id": 15,
     "nombre": "Estrellita de los Ríos",
+    "codigo": "14101015",
     "lat": -39.84933717412028,
-    "lng": -73.2538765276511
+    "lng": -73.2538765276511,
+    "direccion": "Calle Los Aromos 890, Valdivia, Los Ríos",
+    "entidad": "JUNJI",
+    "telefono": "632267854",
+    "directora": "Daniela Fuentes Rojas",
+    "email": "estrellita@eduvaldivia.gob.cl",
+    "horario": "08:00 A 18:30",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Mayor", "rango": "12 - 23 Meses", "capacidad": 20, "vacantes": true },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 28, "vacantes": false },
+      { "nombre": "Nivel de Transición 2", "rango": "60 - 71 Meses", "capacidad": 32, "vacantes": true }
+    ]
   },
   {
+    "id": 16,
     "nombre": "Sueños de Colores",
+    "codigo": "14101016",
     "lat": -39.83614405252419,
-    "lng": -73.2073507494457
+    "lng": -73.2073507494457,
+    "direccion": "Psj. Los Canelos 321, Valdivia, Los Ríos",
+    "entidad": "Particular Subvencionado",
+    "telefono": "632278965",
+    "directora": "Carolina Medina Saavedra",
+    "email": "suenioscolores@gmail.com",
+    "horario": "09:00 A 17:30",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL",
+    "niveles": [
+      { "nombre": "Nivel Medio Menor", "rango": "24 - 35 Meses", "capacidad": 24, "vacantes": true },
+      { "nombre": "Nivel Medio Mayor", "rango": "36 - 47 Meses", "capacidad": 24, "vacantes": true }
+    ]
   },
   {
+    "id": 17,
     "nombre": "Nube de Algodón",
+    "codigo": "14101017",
     "lat": -39.8478677567265,
-    "lng": -73.24595993308479
+    "lng": -73.24595993308479,
+    "direccion": "Calle Los Quillayes 654, Valdivia, Los Ríos",
+    "entidad": "JUNJI",
+    "telefono": "632289076",
+    "directora": "Alejandra Torres Quintana",
+    "email": "nubealgod@eduvaldivia.gob.cl",
+    "horario": "08:30 A 18:30",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL VTF",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 20, "vacantes": false },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 32, "vacantes": true }
+    ]
   },
   {
+    "id": 18,
     "nombre": "Sonrisa de Colores",
+    "codigo": "14101018",
     "lat": -39.82835055956444,
-    "lng": -73.24760519075915
+    "lng": -73.24760519075915,
+    "direccion": "Av. Los Robles 987, Valdivia, Los Ríos",
+    "entidad": "Integra",
+    "telefono": "632201298",
+    "directora": "Pamela Gutiérrez Lagos",
+    "email": "sonrisa@integra.cl",
+    "horario": "08:00 A 18:00",
+    "modalidad": "JARDIN INFANTIL",
+    "programa": "JARDIN INFANTIL",
+    "niveles": [
+      { "nombre": "Sala Cuna Heterogenea", "rango": "0 - 23 Meses", "capacidad": 16, "vacantes": true },
+      { "nombre": "Sala Cuna Mayor", "rango": "12 - 23 Meses", "capacidad": 20, "vacantes": true },
+      { "nombre": "Nivel Medio Mixto", "rango": "24 - 47 Meses", "capacidad": 28, "vacantes": false },
+      { "nombre": "Nivel de Transición 1", "rango": "48 - 59 Meses", "capacidad": 32, "vacantes": true }
+    ]
   }
 ]
