@@ -4,65 +4,68 @@
 <meta charset="utf-8">
 <title>Recorridos Transporte Público – Valdivia</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="app-version" content="2026-06-18-01">
+<meta name="app-version" content="2026-06-18-02">
 
-<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-
-<!-- MarkerCluster -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 
 <style>
-html, body {
-  margin: 0;
-  height: 100%;
-  font-family: Arial, sans-serif;
-}
-#map { width: 100%; height: 100%; }
+/* ══════════════════════════════════════════
+   BASE
+══════════════════════════════════════════ */
+html, body { margin: 0; height: 100%; font-family: Arial, sans-serif; }
+#map { width: 100%; height: 100%; transition: margin-left 0.3s, width 0.3s; }
 
-/* ===== PANEL RECORRIDOS ===== */
+/* ══════════════════════════════════════════
+   PANEL LATERAL RECORRIDOS
+══════════════════════════════════════════ */
 #panel {
-  position: fixed;
-  top: 0; left: 0;
+  position: fixed; top: 0; left: 0;
   width: 260px; height: 100%;
-  background: #ffffff;
-  padding: 12px;
-  box-sizing: border-box;
-  overflow-y: auto;
+  background: #fff; padding: 12px;
+  box-sizing: border-box; overflow-y: auto;
   box-shadow: 4px 0 12px rgba(0,0,0,0.15);
   z-index: 1000;
   transform: translateX(-100%);
   transition: transform 0.3s ease;
 }
 #panel.open { transform: translateX(0); }
-#panel h3 { margin: 0 0 10px 0; color: #0b5ed7; }
+#panel h3 { margin: 0 0 10px; color: #0b5ed7; }
 
-/* ===== LISTA RECORRIDOS ===== */
 #lista > div {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 4px;
-  border-radius: 6px;
-  cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 4px; border-radius: 6px;
+  cursor: pointer; font-size: 14px;
   transition: background 0.15s;
-  font-size: 14px;
 }
 #lista > div:hover { background: #f0f4ff; }
 #lista input[type=checkbox] { cursor: pointer; accent-color: #0b5ed7; }
 
-/* ===== BOTONES FAB ===== */
-.fab {
-  position: fixed;
-  bottom: 16px;
+/* ══════════════════════════════════════════
+   BOTÓN TOGGLE PANEL (desktop)
+══════════════════════════════════════════ */
+#btn-toggle {
+  position: fixed; top: 10px; left: 10px;
   z-index: 1100;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  color: #ffffff;
-  cursor: pointer;
+  background: #0b5ed7; color: #fff;
+  border: none; border-radius: 8px;
+  width: 38px; height: 38px;
+  font-size: 18px; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, left 0.3s;
+}
+#btn-toggle:hover { background: #0a4fc4; }
+#btn-toggle.moved { left: 270px; }
+
+/* ══════════════════════════════════════════
+   BOTONES FAB (mobile)
+══════════════════════════════════════════ */
+.fab {
+  position: fixed; bottom: 16px; z-index: 1100;
+  padding: 10px 14px; border: none; border-radius: 10px;
+  font-weight: bold; color: #fff; cursor: pointer;
   box-shadow: 0 6px 18px rgba(0,0,0,0.35);
   transition: opacity 0.2s, transform 0.2s;
 }
@@ -70,656 +73,497 @@ html, body {
 #btn-recorridos { left: 16px; background: #0b5ed7; }
 #btn-tarifa     { right: 16px; background: #dc3545; }
 
-/* ===== PANEL TARIFAS ===== */
+/* ══════════════════════════════════════════
+   PANEL TARIFAS
+══════════════════════════════════════════ */
 #fare-panel {
-  position: fixed;
-  bottom: 70px;
-  right: 16px;
-  width: 260px;
-  background: #ffffff;
-  padding: 14px;
+  position: fixed; bottom: 70px; right: 16px;
+  width: 260px; background: #fff; padding: 14px;
   border-radius: 14px;
   box-shadow: 0 10px 28px rgba(0,0,0,0.35);
-  transform: translateX(120%);
-  transition: transform 0.3s ease;
+  transform: translateX(120%); transition: transform 0.3s ease;
   z-index: 1200;
 }
 #fare-panel.open { transform: translateX(0); }
-
-#fare-close {
-  position: absolute;
-  top: 6px; right: 8px;
-  border: none;
-  background: none;
-  font-size: 18px;
-  cursor: pointer;
-  color: #dc3545;
-}
+#fare-close { position: absolute; top: 6px; right: 8px; border: none; background: none; font-size: 18px; cursor: pointer; color: #dc3545; }
 #fare-panel h4 { margin-top: 0; color: #dc3545; }
-#fare-panel hr  { border: none; border-top: 1px solid #eee; margin: 10px 0; }
-#fare-panel .fare-row { margin: 4px 0; font-size: 14px; }
+#fare-panel hr { border: none; border-top: 1px solid #eee; margin: 10px 0; }
+.fare-row { margin: 4px 0; font-size: 14px; }
 
-/* ===== LABEL JARDÍN ===== */
+/* ══════════════════════════════════════════
+   LABEL JARDÍN (tooltip permanente)
+══════════════════════════════════════════ */
 .label-jardin {
-  background: rgba(255,255,255,0.9);
-  border-radius: 6px;
-  padding: 2px 6px;
-  font-size: 11px;
+  background: rgba(255,255,255,0.9); border-radius: 6px;
+  padding: 2px 6px; font-size: 11px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
-/* ===== POPUP JARDÍN (tarjeta como imagen 1) ===== */
-.popup-jardin {
-  width: 240px;
-  font-family: Arial, sans-serif;
-  padding: 4px 0 0 0;
-}
-.popup-jardin .pj-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.popup-jardin .pj-icon {
-  width: 44px;
-  height: 44px;
+/* ══════════════════════════════════════════
+   POPUP TARJETA JARDÍN
+══════════════════════════════════════════ */
+.popup-jardin { width: 230px; font-family: Arial, sans-serif; }
+
+.pj-codigo { font-size: 11px; color: #999; margin-bottom: 6px; text-align: right; }
+
+.pj-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+
+.pj-icono {
+  width: 44px; height: 44px; flex-shrink: 0;
   background: linear-gradient(135deg, #6a1b9a, #9c27b0);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 22px;
+  border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; font-size: 22px;
   cursor: pointer;
 }
-.popup-jardin .pj-title {
-  flex: 1;
+
+.pj-nombre {
+  font-size: 16px; font-weight: bold; color: #1a1a2e;
+  cursor: pointer; line-height: 1.2;
 }
-.popup-jardin .pj-codigo {
-  font-size: 11px;
-  color: #888;
-  margin-bottom: 2px;
-}
-.popup-jardin .pj-nombre {
-  font-size: 16px;
-  font-weight: bold;
-  color: #1a1a2e;
-  line-height: 1.2;
-  cursor: pointer;
-}
-.popup-jardin .pj-nombre:hover { color: #6a1b9a; }
-.popup-jardin .pj-badge {
+.pj-nombre:hover { color: #6a1b9a; }
+
+.pj-badge {
   display: inline-block;
-  background: #ede7f6;
-  color: #6a1b9a;
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 20px;
-  margin: 2px 2px 2px 0;
-  font-weight: 500;
+  background: #ede7f6; color: #6a1b9a;
+  font-size: 11px; padding: 2px 8px;
+  border-radius: 20px; margin-top: 4px; font-weight: 500;
 }
-.popup-jardin .pj-dir {
-  font-size: 12px;
-  color: #555;
-  margin: 8px 0 10px 0;
-  display: flex;
-  gap: 6px;
-  align-items: flex-start;
+
+.pj-dir {
+  font-size: 12px; color: #666;
+  display: flex; gap: 5px; align-items: flex-start;
+  margin: 8px 0 10px;
 }
-.popup-jardin .pj-dir-icon { flex-shrink: 0; color: #aaa; }
-.popup-jardin .pj-btn {
-  display: block;
-  width: 100%;
-  background: #1a1a2e;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  text-align: center;
+
+.pj-btn {
+  display: block; width: 100%;
+  background: #1a1a2e; color: #fff;
+  border: none; border-radius: 8px;
+  padding: 10px; font-size: 14px; font-weight: bold;
+  cursor: pointer; text-align: center;
   transition: background 0.2s;
 }
-.popup-jardin .pj-btn:hover { background: #6a1b9a; }
+.pj-btn:hover { background: #6a1b9a; }
 
-/* ===== PANEL DETALLE JARDÍN (como imagen 2) ===== */
+/* ══════════════════════════════════════════
+   PANEL DETALLE JARDÍN (imagen 2 y 3)
+══════════════════════════════════════════ */
 #detalle-panel {
-  position: fixed;
-  top: 0; right: 0;
-  width: 380px;
-  height: 100%;
-  background: #fff;
-  z-index: 2000;
+  position: fixed; top: 0; right: 0;
+  width: 420px; height: 100%;
+  background: #fff; z-index: 2000;
   box-shadow: -6px 0 24px rgba(0,0,0,0.2);
   transform: translateX(100%);
   transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
+  overflow: hidden;
 }
 #detalle-panel.open { transform: translateX(0); }
 
-.dp-close {
-  position: absolute;
-  top: 12px; right: 14px;
-  background: none;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-  color: #555;
-  z-index: 10;
-  line-height: 1;
-}
-.dp-close:hover { color: #dc3545; }
-
-.dp-top {
+/* Cabecera del panel detalle */
+#dp-header {
   background: linear-gradient(135deg, #1a1a2e 0%, #6a1b9a 100%);
-  padding: 28px 20px 22px 20px;
+  padding: 24px 20px 20px;
   color: #fff;
+  flex-shrink: 0;
+  position: relative;
 }
-.dp-top-icon {
-  width: 56px; height: 56px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  margin-bottom: 12px;
+#dp-close {
+  position: absolute; top: 12px; right: 14px;
+  background: none; border: none; color: rgba(255,255,255,0.7);
+  font-size: 22px; cursor: pointer; line-height: 1;
 }
-.dp-top-codigo { font-size: 12px; opacity: 0.7; margin-bottom: 4px; }
-.dp-top-nombre { font-size: 22px; font-weight: bold; margin-bottom: 6px; }
-.dp-top-dir { font-size: 13px; opacity: 0.85; display: flex; gap: 6px; align-items: flex-start; }
+#dp-close:hover { color: #fff; }
 
-.dp-body { padding: 20px; flex: 1; }
-
-.dp-section-title {
-  font-size: 17px;
-  font-weight: bold;
-  color: #1a1a2e;
-  margin: 0 0 14px 0;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #f0f0f0;
+.dp-h-icono {
+  width: 52px; height: 52px;
+  background: rgba(255,255,255,0.15); border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; margin-bottom: 12px;
 }
+.dp-h-codigo { font-size: 12px; opacity: 0.65; margin-bottom: 3px; }
+.dp-h-nombre { font-size: 21px; font-weight: bold; margin-bottom: 6px; }
+.dp-h-dir { font-size: 13px; opacity: 0.8; display: flex; gap: 6px; align-items: flex-start; }
 
-.dp-info-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-.dp-info-label {
-  color: #888;
-  min-width: 150px;
-  font-size: 13px;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-}
-.dp-info-value { color: #222; flex: 1; }
-.dp-info-value a { color: #0b5ed7; text-decoration: none; }
-.dp-info-value a:hover { text-decoration: underline; }
+/* Cuerpo scrolleable */
+#dp-body { flex: 1; overflow-y: auto; padding: 0; }
 
-.dp-badge {
-  display: inline-block;
-  border: 1.5px solid #f5a623;
-  color: #c87f00;
-  font-size: 12px;
-  padding: 2px 10px;
-  border-radius: 20px;
-  font-weight: 500;
-  margin-right: 4px;
+/* Sección dentro del cuerpo */
+.dp-seccion {
+  margin: 0; padding: 18px 20px;
+  border-bottom: 8px solid #f5f5f5;
 }
+.dp-seccion:last-child { border-bottom: none; }
 
-.dp-niveles-section { margin-top: 24px; }
-.dp-ciclo-box {
-  background: #f7f7fb;
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-bottom: 14px;
-}
-.dp-ciclo-title { font-size: 14px; font-weight: bold; color: #1a1a2e; }
-.dp-ciclo-dates { font-size: 12px; color: #888; margin-top: 2px; }
-
-.dp-nivel-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.dp-nivel-table th {
-  text-align: left;
-  color: #555;
-  font-weight: 600;
-  padding: 6px 4px;
+.dp-seccion-titulo {
+  font-size: 16px; font-weight: bold; color: #1a1a2e;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
   border-bottom: 1.5px solid #eee;
-  font-size: 12px;
 }
-.dp-nivel-table td { padding: 10px 4px; border-bottom: 1px solid #f5f5f5; vertical-align: top; }
-.dp-nivel-nombre { font-weight: bold; color: #1a1a2e; }
-.dp-nivel-rango { font-size: 11px; color: #888; margin-top: 2px; }
-.dp-capacidad-box {
-  background: #f0f0f0;
-  border-radius: 6px;
-  text-align: center;
-  padding: 4px 10px;
-  font-weight: bold;
-  font-size: 14px;
+
+/* Filas de información */
+.dp-fila {
+  display: flex; align-items: flex-start;
+  gap: 10px; margin-bottom: 10px; font-size: 14px;
+}
+.dp-fila-label {
+  color: #888; font-size: 13px; min-width: 145px;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px; flex-shrink: 0;
+}
+.dp-fila-valor { color: #1a1a2e; flex: 1; word-break: break-word; }
+.dp-fila-valor a { color: #0b5ed7; text-decoration: none; }
+.dp-fila-valor a:hover { text-decoration: underline; }
+
+/* Badge naranja (modalidad/programa) */
+.dp-tag {
   display: inline-block;
-  min-width: 40px;
+  border: 1.5px solid #f5a623; color: #c87f00;
+  font-size: 12px; padding: 3px 10px;
+  border-radius: 20px; font-weight: 500; margin-right: 4px;
+}
+
+/* Box ciclo */
+.dp-ciclo {
+  background: #f7f7fb; border-radius: 10px;
+  padding: 12px 14px; margin-bottom: 16px;
+}
+.dp-ciclo-titulo { font-size: 14px; font-weight: bold; color: #1a1a2e; }
+.dp-ciclo-fecha { font-size: 12px; color: #888; margin-top: 2px; }
+
+/* Tabla niveles */
+.dp-tabla { width: 100%; border-collapse: collapse; font-size: 13px; }
+.dp-tabla th {
+  text-align: left; color: #666; font-weight: 600;
+  font-size: 12px; padding: 6px 4px;
+  border-bottom: 1.5px solid #e0e0e0;
+}
+.dp-tabla td { padding: 10px 4px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+.dp-nivel-nombre { font-weight: bold; color: #1a1a2e; font-size: 13px; }
+.dp-nivel-rango { font-size: 11px; color: #999; margin-top: 2px; }
+
+.dp-capacidad {
+  background: #eeeeee; border-radius: 6px;
+  text-align: center; padding: 4px 8px;
+  font-weight: bold; font-size: 14px;
+  display: inline-block; min-width: 36px;
 }
 .dp-vacante-si {
-  background: #e8f5e9;
-  color: #2e7d32;
-  font-weight: bold;
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  text-align: center;
-  display: inline-block;
+  background: #e8f5e9; color: #2e7d32;
+  font-weight: bold; font-size: 12px;
+  padding: 5px 10px; border-radius: 6px;
+  text-align: center; display: inline-block;
+  white-space: nowrap;
 }
 .dp-vacante-no {
-  background: #fce4ec;
-  color: #c62828;
-  font-weight: bold;
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  text-align: center;
-  display: inline-block;
+  background: #fce4ec; color: #c62828;
+  font-weight: bold; font-size: 12px;
+  padding: 5px 10px; border-radius: 6px;
+  text-align: center; display: inline-block;
+  white-space: nowrap;
 }
 
-/* ===== TOGGLE PANEL BTN (desktop) ===== */
-#btn-toggle-panel {
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 1100;
-  background: #0b5ed7;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  width: 38px;
-  height: 38px;
-  font-size: 18px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, left 0.3s;
-}
-#btn-toggle-panel:hover { background: #0a4fc4; }
-#btn-toggle-panel.panel-open { left: 270px; }
-
-/* ===== RESPONSIVE ===== */
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
 @media (min-width: 769px) {
   #panel { transform: translateX(0); }
   #btn-recorridos { display: none; }
-  #map {
-    margin-left: 260px;
-    width: calc(100% - 260px);
-    transition: margin-left 0.3s, width 0.3s;
-  }
-  #map.panel-closed {
-    margin-left: 0;
-    width: 100%;
-  }
+  #map { margin-left: 260px; width: calc(100% - 260px); }
+  #map.sin-panel { margin-left: 0; width: 100%; }
 }
 @media (max-width: 768px) {
-  #btn-toggle-panel { display: none; }
-}
-@media (max-width: 480px) {
+  #btn-toggle { display: none; }
   #detalle-panel { width: 100%; }
 }
 </style>
 </head>
-
 <body>
 
-<!-- BOTÓN TOGGLE PANEL (desktop) -->
-<button id="btn-toggle-panel" title="Mostrar/Ocultar recorridos">☰</button>
+<!-- Botón toggle panel (solo desktop) -->
+<button id="btn-toggle" title="Abrir/Cerrar recorridos">✕</button>
 
-<!-- PANEL RECORRIDOS -->
+<!-- Panel recorridos -->
 <div id="panel">
   <h3>🚌 Recorridos</h3>
-  <div id="lista">Cargando recorridos…</div>
+  <div id="lista">Cargando…</div>
 </div>
 
+<!-- FAB mobile -->
 <button id="btn-recorridos" class="fab">☰ Recorridos</button>
+<button id="btn-tarifa" class="fab">💲 Valor de la micro</button>
 
-<!-- PANEL TARIFAS -->
+<!-- Panel tarifas -->
 <div id="fare-panel">
   <button id="fare-close">✖</button>
-  <h4>
-    💲 Detalle de Tarifas<br>
-    <span style="font-size:13px;font-weight:normal">(desde 28/02/2026)</span>
-  </h4>
-
+  <h4>💲 Detalle de Tarifas<br><span style="font-size:13px;font-weight:normal">(desde 28/02/2026)</span></h4>
   <div class="fare-row">👤 <strong>Adulto Local:</strong> $590</div>
   <div class="fare-row">👵 <strong>Adulto Mayor Local:</strong> $290</div>
   <div class="fare-row">🎓 <strong>Estudiante Local:</strong> $190</div>
-
   <hr>
-
   <div class="fare-row">☁️ <strong>Adulto Niebla:</strong> $740</div>
   <div class="fare-row">☁️👵 <strong>Adulto Mayor Niebla:</strong> $370</div>
   <div class="fare-row">☁️🎓 <strong>Estudiante Niebla:</strong> $240</div>
-
-  <div style="margin-top:10px;font-size:12px;text-align:right;color:#666">
-    Proyecto: Julio Alveal Tejos
-  </div>
+  <div style="margin-top:10px;font-size:12px;text-align:right;color:#666">Proyecto: Julio Alveal Tejos</div>
 </div>
 
-<button id="btn-tarifa" class="fab">💲 Valor de la micro</button>
-
-<!-- PANEL DETALLE JARDÍN -->
+<!-- Panel detalle jardín -->
 <div id="detalle-panel">
-  <button class="dp-close" id="dp-close-btn">✕</button>
-  <div id="dp-content"></div>
+  <div id="dp-header">
+    <button id="dp-close">✕</button>
+    <div class="dp-h-icono">🏠</div>
+    <div class="dp-h-codigo" id="dp-codigo"></div>
+    <div class="dp-h-nombre" id="dp-nombre"></div>
+    <div class="dp-h-dir"><span>📍</span><span id="dp-direccion"></span></div>
+  </div>
+  <div id="dp-body">
+    <!-- Sección info general -->
+    <div class="dp-seccion">
+      <div class="dp-seccion-titulo">Información General</div>
+      <div class="dp-fila"><span class="dp-fila-label">Entidad Administradora:</span><span class="dp-fila-valor" id="dp-entidad"></span></div>
+      <div class="dp-fila"><span class="dp-fila-label">Teléfono:</span><span class="dp-fila-valor" id="dp-telefono"></span></div>
+      <div class="dp-fila"><span class="dp-fila-label">Director o directora:</span><span class="dp-fila-valor" id="dp-directora"></span></div>
+      <div class="dp-fila"><span class="dp-fila-label">Correo Electrónico:</span><span class="dp-fila-valor" id="dp-email"></span></div>
+      <div class="dp-fila"><span class="dp-fila-label">Horario de Atención:</span><span class="dp-fila-valor" id="dp-horario"></span></div>
+      <div class="dp-fila"><span class="dp-fila-label">Modalidades:</span><span class="dp-fila-valor" id="dp-modalidad"></span></div>
+      <div class="dp-fila"><span class="dp-fila-label">Programas:</span><span class="dp-fila-valor" id="dp-programa"></span></div>
+    </div>
+
+    <!-- Sección niveles -->
+    <div class="dp-seccion">
+      <div class="dp-seccion-titulo">Niveles Ofrecidos</div>
+      <p style="font-size:13px;color:#888;margin:0 0 12px">Selecciona un proceso de admisión para ver los niveles ofrecidos</p>
+      <div class="dp-ciclo">
+        <div class="dp-ciclo-titulo">Ciclo 6 2026</div>
+        <div class="dp-ciclo-fecha">Abierto del lunes, 8 de junio de 2026 al domingo, 19 de julio de 2026</div>
+      </div>
+      <table class="dp-tabla">
+        <thead>
+          <tr>
+            <th>Nivel</th>
+            <th style="text-align:center">Capacidad</th>
+            <th>Vacantes</th>
+          </tr>
+        </thead>
+        <tbody id="dp-niveles-tbody"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <div id="map"></div>
 
-<!-- JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <script>
-/* ===== REFERENCIAS DOM ===== */
-const elPanel         = document.getElementById('panel');
-const elBtnRecorr     = document.getElementById('btn-recorridos');
-const elBtnToggle     = document.getElementById('btn-toggle-panel');
-const elFarePanel     = document.getElementById('fare-panel');
-const elBtnTarifa     = document.getElementById('btn-tarifa');
-const elFareClose     = document.getElementById('fare-close');
-const elLista         = document.getElementById('lista');
-const detallePanel    = document.getElementById('detalle-panel');
-const dpContent       = document.getElementById('dp-content');
-const dpCloseBtn      = document.getElementById('dp-close-btn');
-const elMap           = document.getElementById('map');
-
-/* ===== MAPA ===== */
+/* ══════════════════════════════════════════════════════════
+   MAPA
+══════════════════════════════════════════════════════════ */
 const map = L.map('map', { zoomControl: false }).setView([-39.82, -73.25], 13);
-
 L.control.zoom({ position: 'topright' }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  { subdomains: 'abcd', maxZoom: 19 }).addTo(map);
 
-L.tileLayer(
-  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-  { subdomains: 'abcd', maxZoom: 19 }
-).addTo(map);
+/* ══════════════════════════════════════════════════════════
+   TOGGLE PANEL RECORRIDOS (desktop)
+══════════════════════════════════════════════════════════ */
+const elPanel    = document.getElementById('panel');
+const elMap      = document.getElementById('map');
+const btnToggle  = document.getElementById('btn-toggle');
+let panelOpen    = true;
 
-/* ===== TOGGLE PANEL DESKTOP ===== */
-let panelVisible = true;
+btnToggle.addEventListener('click', () => {
+  panelOpen = !panelOpen;
+  elPanel.style.transform = panelOpen ? 'translateX(0)' : 'translateX(-100%)';
+  elMap.classList.toggle('sin-panel', !panelOpen);
+  btnToggle.classList.toggle('moved', panelOpen);
+  btnToggle.textContent = panelOpen ? '✕' : '☰';
+  setTimeout(() => map.invalidateSize(), 320);
+});
+btnToggle.classList.add('moved'); // empieza abierto
 
-function togglePanel() {
-  panelVisible = !panelVisible;
-  if (panelVisible) {
-    elPanel.style.transform = 'translateX(0)';
-    elMap.classList.remove('panel-closed');
-    elBtnToggle.classList.add('panel-open');
-    elBtnToggle.textContent = '✕';
-  } else {
-    elPanel.style.transform = 'translateX(-100%)';
-    elMap.classList.add('panel-closed');
-    elBtnToggle.classList.remove('panel-open');
-    elBtnToggle.textContent = '☰';
-  }
-  setTimeout(() => map.invalidateSize(), 310);
-}
+/* ══════════════════════════════════════════════════════════
+   FAB MOBILE
+══════════════════════════════════════════════════════════ */
+document.getElementById('btn-recorridos').addEventListener('click', () => elPanel.classList.toggle('open'));
 
-elBtnToggle.addEventListener('click', togglePanel);
-// Inicializar estado visible en desktop
-elBtnToggle.classList.add('panel-open');
-elBtnToggle.textContent = '✕';
-
-/* ===== BOTONES FAB (mobile) ===== */
-elBtnRecorr.addEventListener('click', () => elPanel.classList.toggle('open'));
-elBtnTarifa.addEventListener('click', () => elFarePanel.classList.toggle('open'));
-elFareClose.addEventListener('click', () => elFarePanel.classList.remove('open'));
-dpCloseBtn.addEventListener('click', () => detallePanel.classList.remove('open'));
-
-/* Cerrar fare-panel al hacer click fuera */
-document.addEventListener('click', (e) => {
-  if (!elFarePanel.contains(e.target) && e.target !== elBtnTarifa) {
-    elFarePanel.classList.remove('open');
-  }
+const farePanel = document.getElementById('fare-panel');
+document.getElementById('btn-tarifa').addEventListener('click', () => farePanel.classList.toggle('open'));
+document.getElementById('fare-close').addEventListener('click', () => farePanel.classList.remove('open'));
+document.addEventListener('click', e => {
+  if (!farePanel.contains(e.target) && e.target !== document.getElementById('btn-tarifa'))
+    farePanel.classList.remove('open');
 });
 
-/* ===== RECORRIDOS ===== */
+/* ══════════════════════════════════════════════════════════
+   PANEL DETALLE JARDÍN
+   Para modificar los campos: editar la función mostrarDetalle()
+══════════════════════════════════════════════════════════ */
+const detallePanel = document.getElementById('detalle-panel');
+document.getElementById('dp-close').addEventListener('click', () => detallePanel.classList.remove('open'));
+
+function mostrarDetalle(j) {
+  /* ── Cabecera ── */
+  document.getElementById('dp-codigo').textContent    = j.codigo    || '';
+  document.getElementById('dp-nombre').textContent    = j.nombre    || '';
+  document.getElementById('dp-direccion').textContent = j.direccion || '';
+
+  /* ── Info general ── */
+  document.getElementById('dp-entidad').textContent   = j.entidad   || '';
+  document.getElementById('dp-directora').textContent = j.directora || '';
+  document.getElementById('dp-horario').textContent   = j.horario   || '';
+
+  const tel = j.telefono || '';
+  document.getElementById('dp-telefono').innerHTML =
+    tel ? `<a href="tel:${tel}">${tel}</a>` : '';
+
+  const email = j.email || '';
+  document.getElementById('dp-email').innerHTML =
+    email ? `<a href="mailto:${email}">${email}</a>` : '';
+
+  document.getElementById('dp-modalidad').innerHTML =
+    j.modalidad ? `<span class="dp-tag">${j.modalidad}</span>` : '';
+
+  document.getElementById('dp-programa').innerHTML =
+    j.programa ? `<span class="dp-tag">${j.programa}</span>` : '';
+
+  /* ── Niveles ── */
+  const tbody = document.getElementById('dp-niveles-tbody');
+  tbody.innerHTML = '';
+  (j.niveles || []).forEach(n => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="dp-nivel-nombre">${n.nombre}</div>
+        <div class="dp-nivel-rango">${n.rango}</div>
+      </td>
+      <td style="text-align:center">
+        <span class="dp-capacidad">${n.capacidad}</span>
+      </td>
+      <td>
+        <span class="${n.vacantes ? 'dp-vacante-si' : 'dp-vacante-no'}">
+          ${n.vacantes ? 'Hay Vacantes' : 'Sin Vacantes'}
+        </span>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  /* ── Abrir panel ── */
+  document.getElementById('dp-body').scrollTop = 0;
+  detallePanel.classList.add('open');
+}
+
+/* ══════════════════════════════════════════════════════════
+   RECORRIDOS
+══════════════════════════════════════════════════════════ */
 const capasRecorridos = [];
 
 fetch('./data/index.json')
   .then(r => r.json())
   .then(routes => {
-    elLista.innerHTML = '';
-
+    const lista = document.getElementById('lista');
+    lista.innerHTML = '';
     routes.forEach(rt => {
       const row = document.createElement('div');
-
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.id = `cb-${rt.route_short_name}`;
+      const cb  = document.createElement('input');
+      cb.type = 'checkbox'; cb.id = `cb-${rt.route_short_name}`;
 
       const dot = document.createElement('span');
-      dot.style.cssText = `
-        display:inline-block;
-        width:12px;height:12px;
-        border-radius:50%;
-        background:${rt.color || '#0b5ed7'};
-        flex-shrink:0;
-      `;
+      dot.style.cssText = `display:inline-block;width:12px;height:12px;border-radius:50%;background:${rt.color||'#0b5ed7'};flex-shrink:0;`;
 
-      const label = document.createElement('label');
-      label.htmlFor = cb.id;
-      label.textContent = `Micro ${rt.route_short_name}`;
-      label.style.cursor = 'pointer';
+      const lbl = document.createElement('label');
+      lbl.htmlFor = cb.id;
+      lbl.textContent = `Micro ${rt.route_short_name}`;
+      lbl.style.cursor = 'pointer';
 
       let layer = null;
-
       cb.addEventListener('change', () => {
         if (cb.checked) {
-          fetch(`./data/${rt.archivo}`)
-            .then(r => r.json())
-            .then(gj => {
-              layer = L.geoJSON(gj, {
-                style: { color: rt.color || '#0b5ed7', weight: 4, opacity: 0.75 }
-              }).addTo(map);
-              capasRecorridos.push({ nombre: `Micro ${rt.route_short_name}`, layer });
-            })
-            .catch(() => {
-              cb.checked = false;
-              alert(`No se pudo cargar el recorrido ${rt.route_short_name}`);
-            });
+          fetch(`./data/${rt.archivo}`).then(r => r.json()).then(gj => {
+            layer = L.geoJSON(gj, { style: { color: rt.color||'#0b5ed7', weight: 4, opacity: 0.75 } }).addTo(map);
+            capasRecorridos.push({ nombre: `Micro ${rt.route_short_name}`, layer });
+          }).catch(() => { cb.checked = false; alert(`No se pudo cargar ${rt.route_short_name}`); });
         } else if (layer) {
           map.removeLayer(layer);
-          const idx = capasRecorridos.findIndex(c => c.layer === layer);
-          if (idx !== -1) capasRecorridos.splice(idx, 1);
+          const i = capasRecorridos.findIndex(c => c.layer === layer);
+          if (i !== -1) capasRecorridos.splice(i, 1);
           layer = null;
         }
       });
 
-      row.append(cb, dot, label);
-      elLista.appendChild(row);
+      row.append(cb, dot, lbl);
+      lista.appendChild(row);
     });
   })
-  .catch(() => {
-    elLista.innerHTML = '<em style="color:#dc3545">Error al cargar recorridos.</em>';
-  });
+  .catch(() => { document.getElementById('lista').innerHTML = '<em style="color:#dc3545">Error al cargar recorridos.</em>'; });
 
-/* ===== DISTANCIA (punto a polilínea) ===== */
-function distancia(latlng, poly) {
-  let min = Infinity;
-  poly.getLayers().forEach(l => {
-    (l.getLatLngs ? l.getLatLngs() : []).flat(3).forEach(p => {
-      min = Math.min(min, map.distance(latlng, p));
-    });
-  });
-  return min;
-}
-
-/* ===== PANEL DETALLE JARDÍN ===== */
-function abrirDetalle(j) {
-  const hasVacantes = j.niveles.some(n => n.vacantes);
-
-  const nivelesRows = j.niveles.map(n => `
-    <tr>
-      <td>
-        <div class="dp-nivel-nombre">${n.nombre}</div>
-        <div class="dp-nivel-rango">${n.rango}</div>
-      </td>
-      <td style="text-align:center"><span class="dp-capacidad-box">${n.capacidad}</span></td>
-      <td><span class="${n.vacantes ? 'dp-vacante-si' : 'dp-vacante-no'}">${n.vacantes ? 'Hay Vacantes' : 'Sin Vacantes'}</span></td>
-    </tr>
-  `).join('');
-
-  dpContent.innerHTML = `
-    <div class="dp-top">
-      <div class="dp-top-icon">🏠</div>
-      <div class="dp-top-codigo">${j.codigo}</div>
-      <div class="dp-top-nombre">${j.nombre}</div>
-      <div class="dp-top-dir">
-        <span style="opacity:0.6;flex-shrink:0">📍</span>
-        <span>${j.direccion}</span>
-      </div>
-    </div>
-    <div class="dp-body">
-      <div class="dp-section-title">Información General</div>
-
-      <div class="dp-info-row">
-        <span class="dp-info-label">Entidad Administradora:</span>
-        <span class="dp-info-value">${j.entidad}</span>
-      </div>
-      <div class="dp-info-row">
-        <span class="dp-info-label">Teléfono:</span>
-        <span class="dp-info-value"><a href="tel:${j.telefono}">${j.telefono}</a></span>
-      </div>
-      <div class="dp-info-row">
-        <span class="dp-info-label">Director o directora:</span>
-        <span class="dp-info-value">${j.directora}</span>
-      </div>
-      <div class="dp-info-row">
-        <span class="dp-info-label">Correo Electrónico:</span>
-        <span class="dp-info-value" style="word-break:break-all"><a href="mailto:${j.email}">${j.email}</a></span>
-      </div>
-      <div class="dp-info-row">
-        <span class="dp-info-label">Horario de Atención:</span>
-        <span class="dp-info-value">${j.horario}</span>
-      </div>
-      <div class="dp-info-row">
-        <span class="dp-info-label">Modalidades:</span>
-        <span class="dp-info-value"><span class="dp-badge">${j.modalidad}</span></span>
-      </div>
-      <div class="dp-info-row">
-        <span class="dp-info-label">Programas:</span>
-        <span class="dp-info-value"><span class="dp-badge">${j.programa}</span></span>
-      </div>
-
-      <div class="dp-niveles-section">
-        <div class="dp-section-title">Niveles Ofrecidos</div>
-        <div class="dp-ciclo-box">
-          <div class="dp-ciclo-title">Ciclo 6 2026</div>
-          <div class="dp-ciclo-dates">Abierto del lunes, 8 de junio de 2026 al domingo, 19 de julio de 2026</div>
-        </div>
-        <table class="dp-nivel-table">
-          <thead>
-            <tr>
-              <th>Nivel</th>
-              <th style="text-align:center">Capacidad</th>
-              <th>Vacantes</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${nivelesRows}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-
-  detallePanel.classList.add('open');
-}
-
-/* ===== JARDINES + CLUSTER ===== */
+/* ══════════════════════════════════════════════════════════
+   JARDINES
+   Los datos vienen de data/jardines.json
+   Para añadir/modificar jardines: editar ese archivo JSON
+══════════════════════════════════════════════════════════ */
 const cluster = L.markerClusterGroup({ disableClusteringAtZoom: 17 });
 
 const iconJardin = L.icon({
-  iconUrl:    './icons/jardines.png',
-  iconSize:   [30, 30],
-  iconAnchor: [15, 28]
+  iconUrl: './icons/jardines.png',
+  iconSize: [30, 30], iconAnchor: [15, 28]
 });
 
-let jardinesData = [];
+// Guardamos referencia global para acceder desde el popup
+let _jardinesData = [];
 
 fetch('./data/jardines.json')
   .then(r => r.json())
   .then(jardines => {
-    jardinesData = jardines;
+    _jardinesData = jardines;
 
     jardines.forEach(j => {
-      const m = L.marker([j.lat, j.lng], { icon: iconJardin })
-        .bindTooltip(j.nombre, {
-          permanent:  true,
-          direction:  'top',
-          offset:     [0, -22],
-          className:  'label-jardin'
-        });
+      // Crear marcador
+      const marker = L.marker([j.lat, j.lng], { icon: iconJardin });
 
-      const popupHtml = `
-        <div class="popup-jardin" data-jardin-id="${j.id}">
-          <div style="font-size:11px;color:#888;margin-bottom:6px;text-align:right">${j.codigo}</div>
+      // Tooltip permanente con el nombre
+      marker.bindTooltip(j.nombre, {
+        permanent: true, direction: 'top',
+        offset: [0, -22], className: 'label-jardin'
+      });
+
+      // HTML de la tarjeta popup
+      marker.bindPopup(`
+        <div class="popup-jardin">
+          <div class="pj-codigo">${j.codigo}</div>
           <div class="pj-header">
-            <div class="pj-icon">🏠</div>
-            <div class="pj-title">
+            <div class="pj-icono">🏠</div>
+            <div>
               <div class="pj-nombre">${j.nombre}</div>
-              <div style="margin-top:4px">
-                <span class="pj-badge">${j.modalidad}</span>
-              </div>
+              <span class="pj-badge">${j.modalidad}</span>
             </div>
           </div>
-          <div class="pj-dir">
-            <span class="pj-dir-icon">📍</span>
-            <span>${j.direccion}</span>
-          </div>
-          <button class="pj-btn pj-ver-ficha" data-id="${j.id}">Ver Ficha &rsaquo;</button>
+          <div class="pj-dir"><span>📍</span><span>${j.direccion}</span></div>
+          <button class="pj-btn" data-id="${j.id}">Ver Ficha ›</button>
         </div>
-      `;
+      `, { maxWidth: 260 });
 
-      m.bindPopup(popupHtml, { maxWidth: 260 });
-      cluster.addLayer(m);
+      cluster.addLayer(marker);
+    });
+
+    // Escuchar clics dentro de cualquier popup abierto
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.pj-btn[data-id]');
+      if (!btn) return;
+      const id = parseInt(btn.dataset.id);
+      const j  = _jardinesData.find(x => x.id === id);
+      if (j) {
+        map.closePopup();
+        mostrarDetalle(j);
+      }
     });
   })
   .catch(() => console.warn('No se pudo cargar jardines.json'));
 
-// Siempre mostrar jardines
+// Mostrar jardines siempre (sin filtro)
 map.addLayer(cluster);
-
-// Delegación de eventos para "Ver Ficha" dentro de cualquier popup abierto
-map.on('popupopen', (e) => {
-  const popup = e.popup.getElement();
-  if (!popup) return;
-  const btn = popup.querySelector('.pj-ver-ficha');
-  if (btn) {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id);
-      const j = jardinesData.find(x => x.id === id);
-      if (j) {
-        map.closePopup();
-        abrirDetalle(j);
-      }
-    });
-  }
-  // También al pinchar el ícono o el nombre
-  popup.querySelectorAll('.pj-icon, .pj-nombre').forEach(el => {
-    el.addEventListener('click', () => {
-      const wrap = el.closest('[data-jardin-id]');
-      if (!wrap) return;
-      const id = parseInt(wrap.dataset.jardinId);
-      const j = jardinesData.find(x => x.id === id);
-      if (j) {
-        map.closePopup();
-        abrirDetalle(j);
-      }
-    });
-  });
-});
 </script>
-
 </body>
 </html>
