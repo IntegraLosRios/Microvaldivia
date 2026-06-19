@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Recorridos Transporte Público – Valdivia</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="app-version" content="2026-06-18-02">
+<meta name="app-version" content="2026-06-19-sheets-sync">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -264,6 +264,59 @@ html, body { margin: 0; height: 100%; font-family: Arial, sans-serif; }
   white-space: nowrap;
 }
 
+/* ── Cupos disponibles ── */
+.dp-cupos {
+  font-size: 11px; color: #555; margin-top: 3px;
+}
+.dp-cupos strong { color: #2e7d32; }
+.dp-cupos-cero  { color: #c62828; }
+
+/* ── Sección horarios jornadas ── */
+.dp-horarios-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-top: 6px;
+}
+.dp-jornada-card {
+  background: #f8f9ff; border-radius: 10px;
+  padding: 10px 12px; border-left: 3px solid #6a1b9a;
+}
+.dp-jornada-card.tjmj { border-left-color: #0b5ed7; }
+.dp-jornada-titulo {
+  font-size: 11px; font-weight: bold; text-transform: uppercase;
+  color: #6a1b9a; letter-spacing: 0.5px; margin-bottom: 6px;
+}
+.dp-jornada-card.tjmj .dp-jornada-titulo { color: #0b5ed7; }
+.dp-jornada-fila {
+  font-size: 12px; color: #444; margin: 3px 0;
+  display: flex; justify-content: space-between;
+}
+.dp-jornada-fila span:last-child { font-weight: bold; color: #1a1a2e; }
+
+/* ── Badge fuente datos ── */
+.dp-fuente-badge {
+  font-size: 10px; padding: 2px 7px; border-radius: 10px;
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 4px;
+}
+.dp-fuente-sheet {
+  background: #e8f5e9; color: #2e7d32;
+}
+.dp-fuente-local {
+  background: #fff3e0; color: #e65100;
+}
+
+/* ── Indicador de sincronización global ── */
+#sync-status {
+  position: fixed; bottom: 70px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26,26,46,0.9); color: #fff;
+  font-size: 12px; padding: 6px 14px; border-radius: 20px;
+  z-index: 2100; white-space: nowrap;
+  opacity: 0; transition: opacity 0.4s;
+  pointer-events: none;
+}
+#sync-status.visible { opacity: 1; }
+
 /* ══════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════ */
@@ -330,6 +383,12 @@ html, body { margin: 0; height: 100%; font-family: Arial, sans-serif; }
       <div class="dp-fila"><span class="dp-fila-label">Programas:</span><span class="dp-fila-valor" id="dp-programa"></span></div>
     </div>
 
+    <!-- Sección horarios jornadas -->
+    <div class="dp-seccion" id="dp-seccion-horarios" style="display:none">
+      <div class="dp-seccion-titulo">Horario Jornadas</div>
+      <div class="dp-horarios-grid" id="dp-horarios-grid"></div>
+    </div>
+
     <!-- Sección niveles -->
     <div class="dp-seccion">
       <div class="dp-seccion-titulo">Niveles Ofrecidos</div>
@@ -342,20 +401,25 @@ html, body { margin: 0; height: 100%; font-family: Arial, sans-serif; }
         <thead>
           <tr>
             <th>Nivel</th>
-            <th style="text-align:center">Capacidad</th>
+            <th style="text-align:center">Cap. Sala</th>
             <th>Vacantes</th>
           </tr>
         </thead>
         <tbody id="dp-niveles-tbody"></tbody>
       </table>
+      <div id="dp-fuente" style="margin-top:10px;text-align:right"></div>
     </div>
   </div>
 </div>
+
+<!-- Indicador de sincronización -->
+<div id="sync-status">🔄 Actualizando datos desde Google Sheets…</div>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="./sheets-sync.js"></script>
 
 <script>
 /* ══════════════════════════════════════════════════════════
@@ -429,10 +493,42 @@ function mostrarDetalle(j) {
   document.getElementById('dp-programa').innerHTML =
     j.programa ? `<span class="dp-tag">${j.programa}</span>` : '';
 
+  /* ── Horarios Jornadas (desde AOC) ── */
+  const secHorarios = document.getElementById('dp-seccion-horarios');
+  const gridHorarios = document.getElementById('dp-horarios-grid');
+  const h = j.horarios;
+  if (h && (h.jhTiasInicio || h.tjmjInicio)) {
+    gridHorarios.innerHTML = '';
+    if (h.jhTiasInicio) {
+      gridHorarios.innerHTML += `
+        <div class="dp-jornada-card">
+          <div class="dp-jornada-titulo">Jornada Habitual (JH)</div>
+          <div class="dp-jornada-fila"><span>Tías inicio:</span><span>${h.jhTiasInicio}</span></div>
+          <div class="dp-jornada-fila"><span>Niños entrada:</span><span>${h.jhNinoInicio || '—'}</span></div>
+          <div class="dp-jornada-fila"><span>Niños salida:</span><span>${h.jhNinoTermino || '—'}</span></div>
+          <div class="dp-jornada-fila"><span>Tías término:</span><span>${h.jhTiasTermino || '—'}</span></div>
+        </div>`;
+    }
+    if (h.tjmjInicio) {
+      gridHorarios.innerHTML += `
+        <div class="dp-jornada-card tjmj">
+          <div class="dp-jornada-titulo">Tarde (TJMJ)</div>
+          <div class="dp-jornada-fila"><span>Inicio:</span><span>${h.tjmjInicio}</span></div>
+          <div class="dp-jornada-fila"><span>Término:</span><span>${h.tjmjTermino || '—'}</span></div>
+        </div>`;
+    }
+    secHorarios.style.display = '';
+  } else {
+    secHorarios.style.display = 'none';
+  }
+
   /* ── Niveles ── */
   const tbody = document.getElementById('dp-niveles-tbody');
   tbody.innerHTML = '';
   (j.niveles || []).forEach(n => {
+    const capMostrar = n.capSala || n.capacidad || 0;
+    const cupos = n.cuposDisponibles;
+    const tieneCupos = cupos !== undefined && cupos !== null;
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
@@ -440,15 +536,26 @@ function mostrarDetalle(j) {
         <div class="dp-nivel-rango">${n.rango}</div>
       </td>
       <td style="text-align:center">
-        <span class="dp-capacidad">${n.capacidad}</span>
+        <span class="dp-capacidad">${capMostrar}</span>
       </td>
       <td>
         <span class="${n.vacantes ? 'dp-vacante-si' : 'dp-vacante-no'}">
           ${n.vacantes ? 'Hay Vacantes' : 'Sin Vacantes'}
         </span>
+        ${tieneCupos ? `<div class="dp-cupos ${cupos === 0 ? 'dp-cupos-cero' : ''}">
+          ${cupos > 0 ? `<strong>${cupos} cupo${cupos !== 1 ? 's' : ''}</strong> disponible${cupos !== 1 ? 's' : ''}` : 'Sin cupos disponibles'}
+        </div>` : ''}
       </td>`;
     tbody.appendChild(tr);
   });
+
+  /* ── Fuente de datos ── */
+  const fuente = document.getElementById('dp-fuente');
+  if (j._fuenteDatos === 'sheet' && j._ultimaActualizacion) {
+    fuente.innerHTML = `<span class="dp-fuente-badge dp-fuente-sheet">✅ Actualizado desde Google Sheets · ${j._ultimaActualizacion}</span>`;
+  } else {
+    fuente.innerHTML = `<span class="dp-fuente-badge dp-fuente-local">📋 Datos locales</span>`;
+  }
 
   /* ── Abrir panel ── */
   document.getElementById('dp-body').scrollTop = 0;
@@ -500,10 +607,21 @@ fetch('./data/index.json')
   .catch(() => { document.getElementById('lista').innerHTML = '<em style="color:#dc3545">Error al cargar recorridos.</em>'; });
 
 /* ══════════════════════════════════════════════════════════
-   JARDINES
-   Los datos vienen de data/jardines.json
-   Para añadir/modificar jardines: editar ese archivo JSON
+   JARDINES — Sincronización con Google Sheets AOC
+   ─────────────────────────────────────────────────────────
+   CONFIGURACIÓN:
+   Reemplaza el valor de SHEET_CSV_URL con la URL de tu
+   Google Sheet exportado como CSV:
+     1. Abrir el Sheet → Archivo → Compartir → Publicar en la web
+     2. Seleccionar la hoja "CONFORMACION 2026"
+     3. Formato: CSV
+     4. Copiar la URL generada aquí debajo
+   ─────────────────────────────────────────────────────────
+   Si dejas SHEET_CSV_URL vacío, se usarán los datos locales.
 ══════════════════════════════════════════════════════════ */
+const SHEET_CSV_URL =
+  'https://docs.google.com/spreadsheets/d/1lEJqzLtDBZRE53Qei_qPDTazGXrZh30OCR6Me-PnkMs/export?format=csv&gid=909729487';
+
 const cluster = L.markerClusterGroup({ disableClusteringAtZoom: 17 });
 
 const iconJardin = L.icon({
@@ -511,28 +629,46 @@ const iconJardin = L.icon({
   iconSize: [30, 30], iconAnchor: [15, 28]
 });
 
-// Guardamos referencia global para acceder desde el popup
 let _jardinesData = [];
 
-fetch('./data/jardines.json')
-  .then(r => r.json())
+/* Mostrar indicador de carga */
+const syncStatus = document.getElementById('sync-status');
+function mostrarSync(msg, timeout = 0) {
+  syncStatus.textContent = msg;
+  syncStatus.classList.add('visible');
+  if (timeout) setTimeout(() => syncStatus.classList.remove('visible'), timeout);
+}
+
+mostrarSync('🔄 Cargando datos de jardines…');
+
+loadJardinesFromSheets(SHEET_CSV_URL)
   .then(jardines => {
     _jardinesData = jardines;
+    const desdeSheet = jardines.filter(j => j._fuenteDatos === 'sheet').length;
+    const msg = desdeSheet > 0
+      ? `✅ ${desdeSheet} jardines actualizados desde Google Sheets`
+      : '📋 Usando datos locales (Sheet no disponible)';
+    mostrarSync(msg, 4000);
 
     jardines.forEach(j => {
-      // Crear marcador
       const marker = L.marker([j.lat, j.lng], { icon: iconJardin });
 
-      // Tooltip permanente con el nombre
       marker.bindTooltip(j.nombre, {
         permanent: true, direction: 'top',
         offset: [0, -22], className: 'label-jardin'
       });
 
-      // HTML de la tarjeta popup
+      // Contar cupos totales para el popup
+      const totalCupos = (j.niveles || []).reduce((sum, n) =>
+        sum + (n.cuposDisponibles || 0), 0);
+      const hayVacantes = (j.niveles || []).some(n => n.vacantes);
+      const badgeVacantes = hayVacantes
+        ? `<span style="color:#2e7d32;font-weight:bold;font-size:11px">✓ Hay vacantes</span>`
+        : `<span style="color:#c62828;font-weight:bold;font-size:11px">✗ Sin vacantes</span>`;
+
       marker.bindPopup(`
         <div class="popup-jardin">
-          <div class="pj-codigo">${j.codigo}</div>
+          <div class="pj-codigo">${j.codigo}${j._fuenteDatos === 'sheet' ? ' · <span style="color:#2e7d32">✅ Actualizado</span>' : ''}</div>
           <div class="pj-header">
             <div class="pj-icono">🏠</div>
             <div>
@@ -541,6 +677,7 @@ fetch('./data/jardines.json')
             </div>
           </div>
           <div class="pj-dir"><span>📍</span><span>${j.direccion}</span></div>
+          <div style="margin:6px 0 10px;font-size:12px">${badgeVacantes}</div>
           <button class="pj-btn" data-id="${j.id}">Ver Ficha ›</button>
         </div>
       `, { maxWidth: 260 });
@@ -548,21 +685,19 @@ fetch('./data/jardines.json')
       cluster.addLayer(marker);
     });
 
-    // Escuchar clics dentro de cualquier popup abierto
     document.addEventListener('click', e => {
       const btn = e.target.closest('.pj-btn[data-id]');
       if (!btn) return;
       const id = parseInt(btn.dataset.id);
       const j  = _jardinesData.find(x => x.id === id);
-      if (j) {
-        map.closePopup();
-        mostrarDetalle(j);
-      }
+      if (j) { map.closePopup(); mostrarDetalle(j); }
     });
   })
-  .catch(() => console.warn('No se pudo cargar jardines.json'));
+  .catch(err => {
+    console.error('Error cargando jardines:', err);
+    mostrarSync('❌ Error al cargar jardines', 5000);
+  });
 
-// Mostrar jardines siempre (sin filtro)
 map.addLayer(cluster);
 </script>
 </body>
